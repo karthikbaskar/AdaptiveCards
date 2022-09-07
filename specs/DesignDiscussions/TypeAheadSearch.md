@@ -51,13 +51,31 @@ Data.Query Definition
 
 Diagram - https://www.plantuml.com/plantuml/uml/POynRiCm34LtdeAZV8LcI52dtRhKQnT5Pc2YicY859BSldG3D4cZwOEVxqdQgSLgRSxm6m3uY87resNZWJ8bstPe4nKC5z8E45ygbP4gzXEbxrSvasw0iXA68ckl9xOqOUWduKG3sM2NJDkryfFYkeblvoMwPSJh-6RzAfznPC53CvEYcmUgbtc9oR33VzI-ohANKt4y-D91_5tT8_lEsQW-ttWhxYL_mpkRSqvSlmUU-0Xgii3ESvlp3m00
 
-### Proposed Input.ChoiceSet rendering
+### Input.ChoiceSet rendering on Teams Client
+![img](assets/InputLabels/Input.ChoiceSet_TW.png)
 
-![img](assets/InputLabels/Input.ChoiceSet_rendering_2.png)
+Diagram - https://www.plantuml.com/plantuml/uml/VOynJyD034Rt_0ghKpBGxcMfL41YGAeKnYpMdTjON7odimE4Nq-Ieb82OekUFh-NswbXjhuBnVnHR1ybzRRUjv4TrMHmmAm43o6-tHPyXDAZeOwS1TmyqlM4W1KQSL5UAIiQHwa9isiXvf77V4BXZojUWRKaK0waLG6mFL1CWU30xeNoLmv0BQQYb5W11QKfhpO4siBgoC4earyjHRMD5RUv6mGxTl0y9CAMq3UYVKen6tculEx_XejTGcU_4lip_zOqKjOifq2RfpuOtzGKo5drjvrr7fqtI_NzUqBnv7-uh_SNvwI3KRmyM_xIycv7ulikV080
 
-Diagram - https://www.plantuml.com/plantuml/uml/PP2nSlCW3CTtda8ZVeNFG_BLRhSkTSSi2bOEhXZvGBx4Rry8lJZdQE04V_r_4ZecmIZBvDKzKSfTG5jCdMLdQ23fKV3GW5WAe5TAZGA0Vn0fZ1JXUvtfloKS1y9ex2dNz6l0oPccLUGJWGvyjnIkIv-B5pUG9oDxQC7-KJjBvkUDRsrvVgQKI5Sdne9-J3Z8wkbGvH86Ym7URpDcsWYRidKuXIyS7SDv4U6Gshsvusb68z20Ul7saUUUho53TAuxSvwqUI5yE2yKQ_iTOTEUKBjDwa5Gd7bmix5-NDMBkwXw9k5P7NE-JFuN
+The "style" property takes precedence over "choices.data" property in case of dynamic typeahead in Teams. 
+1.  If the dataset mentioned in choices.data property is currentContextDataset or OrganizationDataset, then the flow for people picker is executed. 
+2. Otherwise, if style property is set to “filtered”, only then is static or dynamic type-ahead enabled for the Input.ChoiceSet element on the Adaptive Card. 
 
-### Communication with Host to fetch Dynamic choices
+### Possible Options for Dynamic Typeahead implementation in Input.ChoiceSet
+1. **If style property is set to ”filtered” in the card payload, only then should we continue with dynamic typeahead flow.**
+	- <font color="green">Restricting this feature to style: “filtered” ensures the sanctity of the other styles supported by Input.ChoiceSet. The developer will associate concrete meaning to each of the styles in this manner.</font>
+	- <font color="red">“choices.data” property, if present, will be ignored by the Adaptive Card SDK if style takes precedence.</font>
+2. **If choices.data property is present in the card payload, and it is valid, we will override style to be “filtered” no matter what style is set in the Json and then continue with the dynamic typeahead flow.**
+	- <font color="green">The developer is offered flexibility as the presence of a valid “choices.data” property will ensure typeahead support in the card. </font>
+	- <font color="green">If style is not "filtered" and choices array is empty, a choiceset with no options will be rendered. If "choices.data" property is given precedence, at least user can provide input in the textbox in cases where this property is present.</font>
+	- <font color="red">The documentation must be concise enough to ensure the developer understands what takes precedence in which situation.</font>
+
+### Proposed Input.ChoiceSet Render Flow
+![img](assets/InputLabels/Input.ChoiceSet_DynamicTypeahead.png)
+*Option 2: Without multi-select support*
+
+Diagram - https://www.plantuml.com/plantuml/uml/VO-nJiD038RtUmghKxF07WQgDX9YOA6CMSoTerXSxDET3vgt9magI1rOh5-o_FsV3yKmMvsYsuBZ0VPSNceqFbCaRuyDs4W2-vbAum3QJ18emsaa_t7KouEZM0ZsekjsFVUZigTo5z0GkC0dHWwzW6OeDaTgOJTmDCeKTZVmF_pPqDZVTxFWnBwNjpaHZeG1Iar9iz62V9PK3JO9s0nWTLaThaLqIIZXdw9UNZ6mmh6QgS1JrffMslMf5W8DMAE1wQ--rocXjzqDgSkQElrQMauwlUlYrMme2JoudrbCapiikKxn6m00
+
+### Communication with Host to fetch Dynamic choices for Android SDK
 
 ![img](assets/InputLabels/registerTypeAhead2WayCommunication.png)
 
@@ -110,3 +128,6 @@ Since we still support defining static values as choices, we can just provide th
 1. SDK will leave the search request processing to the host? Is there a need for the host to register any pre-determined databases?
 2. Current `Filtered` choice set style support single select for static choices. When `choices.data` is absent in the payload. Do we support multi select from filtered static choices?
 3. Does developer assign ChoiceSetStyle as `Filtered` when using TypeAheadSearch? If not, how do we manage fallback to show static choices using existing `Filtered` ChoiceSetStyle control?
+4. What will be the loading experience while the results are being fetched? In Teams, a circular loader is shown in the dropdown in this case.
+5. How do we plan to handle negative responses? For ACv2, the SDK logs the event and resorts to a console warning to indicate the invoke has failed.
+6. Do we show anything if no results are fetched? Currently, the SDK renders an emmpty drop down if no choices are present for static typeahead.

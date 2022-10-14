@@ -75,6 +75,14 @@ public class ChoiceSetInput extends BaseInputElement {
     return new ChoiceInputVector(AdaptiveCardObjectModelJNI.ChoiceSetInput_GetChoices__SWIG_0(swigCPtr, this), false);
   }
 
+  public SWIGTYPE_p_std__shared_ptrT_AdaptiveCards__ChoicesData_t GetChoicesData() {
+    return new SWIGTYPE_p_std__shared_ptrT_AdaptiveCards__ChoicesData_t(AdaptiveCardObjectModelJNI.ChoiceSetInput_GetChoicesData__SWIG_0(swigCPtr, this), false);
+  }
+
+  public void SetChoicesData(SWIGTYPE_p_std__shared_ptrT_AdaptiveCards__ChoicesData_t arg0) {
+    AdaptiveCardObjectModelJNI.ChoiceSetInput_SetChoicesData(swigCPtr, this, SWIGTYPE_p_std__shared_ptrT_AdaptiveCards__ChoicesData_t.getCPtr(arg0));
+  }
+
   public String GetValue() {
     return AdaptiveCardObjectModelJNI.ChoiceSetInput_GetValue(swigCPtr, this);
   }

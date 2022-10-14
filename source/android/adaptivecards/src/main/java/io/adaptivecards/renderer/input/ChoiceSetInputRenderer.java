@@ -407,6 +407,8 @@ public class ChoiceSetInputRenderer extends BaseCardElementRenderer
         int valueIndex = -1;
         String value = choiceSetInput.GetValue();
 
+        choiceSetInput.GetChoicesData();
+
         for (int i = 0; i < size; i++)
         {
             ChoiceInput choiceInput = choiceInputVector.get(i);

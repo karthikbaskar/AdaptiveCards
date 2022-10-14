@@ -17608,6 +17608,46 @@ SWIGEXPORT jlong JNICALL Java_io_adaptivecards_objectmodel_AdaptiveCardObjectMod
 }
 
 
+SWIGEXPORT jlong JNICALL Java_io_adaptivecards_objectmodel_AdaptiveCardObjectModelJNI_ChoiceSetInput_1GetChoicesData_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jlong jresult = 0 ;
+  AdaptiveCards::ChoiceSetInput *arg1 = (AdaptiveCards::ChoiceSetInput *) 0 ;
+  std::shared_ptr< AdaptiveCards::ChoiceSetInput > *smartarg1 = 0 ;
+  std::shared_ptr< AdaptiveCards::ChoicesData > *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  
+  smartarg1 = *(std::shared_ptr<  AdaptiveCards::ChoiceSetInput > **)&jarg1;
+  arg1 = (AdaptiveCards::ChoiceSetInput *)(smartarg1 ? smartarg1->get() : 0); 
+  result = (std::shared_ptr< AdaptiveCards::ChoicesData > *) &(arg1)->GetChoicesData();
+  *(std::shared_ptr< AdaptiveCards::ChoicesData > **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_io_adaptivecards_objectmodel_AdaptiveCardObjectModelJNI_ChoiceSetInput_1SetChoicesData(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2) {
+  AdaptiveCards::ChoiceSetInput *arg1 = (AdaptiveCards::ChoiceSetInput *) 0 ;
+  SwigValueWrapper< std::shared_ptr< AdaptiveCards::ChoicesData > > arg2 ;
+  std::shared_ptr< AdaptiveCards::ChoiceSetInput > *smartarg1 = 0 ;
+  std::shared_ptr< AdaptiveCards::ChoicesData > *argp2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  
+  smartarg1 = *(std::shared_ptr<  AdaptiveCards::ChoiceSetInput > **)&jarg1;
+  arg1 = (AdaptiveCards::ChoiceSetInput *)(smartarg1 ? smartarg1->get() : 0); 
+  argp2 = *(std::shared_ptr< AdaptiveCards::ChoicesData > **)&jarg2; 
+  if (!argp2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null std::shared_ptr< AdaptiveCards::ChoicesData >");
+    return ;
+  }
+  arg2 = *argp2; 
+  (arg1)->SetChoicesData(arg2);
+}
+
+
 SWIGEXPORT jstring JNICALL Java_io_adaptivecards_objectmodel_AdaptiveCardObjectModelJNI_ChoiceSetInput_1GetValue(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jstring jresult = 0 ;
   AdaptiveCards::ChoiceSetInput *arg1 = (AdaptiveCards::ChoiceSetInput *) 0 ;

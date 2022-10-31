@@ -266,6 +266,7 @@
 		CA1218C921C4509400152EA8 /* ToggleVisibilityAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA1218C521C4509400152EA8 /* ToggleVisibilityAction.cpp */; };
 		CF5F588828D1F5CC00F511A9 /* ChoicesData.h in Headers */ = {isa = PBXBuildFile; fileRef = CF5F588728D1F5CC00F511A9 /* ChoicesData.h */; };
 		CF5F588A28D1F5DC00F511A9 /* ChoicesData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF5F588928D1F5DC00F511A9 /* ChoicesData.cpp */; };
+		CFD358B8290FFD83000BE79F /* ACODebouncer.m in Sources */ = {isa = PBXBuildFile; fileRef = CFD358B7290FFD83000BE79F /* ACODebouncer.m */; };
 		DD278A02932F65F8BDD1EA5D /* Pods_AdaptiveCards.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 255F5D3143215497D4067E21 /* Pods_AdaptiveCards.framework */; };
 		EC367F912F6036B68C5BBFDB /* Pods_AdaptiveCards_AdaptiveCardsTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E3DBB3CD3C02321AED9AEF65 /* Pods_AdaptiveCards_AdaptiveCardsTests.framework */; };
 		F401A8781F0DB69B006D7AF2 /* ACRImageSetUICollectionView.mm in Sources */ = {isa = PBXBuildFile; fileRef = F401A8761F0DB69B006D7AF2 /* ACRImageSetUICollectionView.mm */; };
@@ -744,6 +745,8 @@
 		CA1218C521C4509400152EA8 /* ToggleVisibilityAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ToggleVisibilityAction.cpp; path = ../../../../shared/cpp/ObjectModel/ToggleVisibilityAction.cpp; sourceTree = "<group>"; };
 		CF5F588728D1F5CC00F511A9 /* ChoicesData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ChoicesData.h; path = ../../../../shared/cpp/ObjectModel/ChoicesData.h; sourceTree = "<group>"; };
 		CF5F588928D1F5DC00F511A9 /* ChoicesData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ChoicesData.cpp; path = ../../../../shared/cpp/ObjectModel/ChoicesData.cpp; sourceTree = "<group>"; };
+		CFD358B6290FFD69000BE79F /* ACODebouncer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ACODebouncer.h; sourceTree = "<group>"; };
+		CFD358B7290FFD83000BE79F /* ACODebouncer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ACODebouncer.m; sourceTree = "<group>"; };
 		E3DBB3CD3C02321AED9AEF65 /* Pods_AdaptiveCards_AdaptiveCardsTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AdaptiveCards_AdaptiveCardsTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED131801E4C2E2B662925ABF /* Pods-AdaptiveCards-AdaptiveCardsTests.apprelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AdaptiveCards-AdaptiveCardsTests.apprelease.xcconfig"; path = "Target Support Files/Pods-AdaptiveCards-AdaptiveCardsTests/Pods-AdaptiveCards-AdaptiveCardsTests.apprelease.xcconfig"; sourceTree = "<group>"; };
 		F401A8761F0DB69B006D7AF2 /* ACRImageSetUICollectionView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ACRImageSetUICollectionView.mm; sourceTree = "<group>"; };
@@ -1138,6 +1141,8 @@
 				6BFF23DF2714C0F000183C59 /* ACRViewPrivate.h */,
 				6BFF24132714EF2200183C59 /* UtiliOS.h */,
 				6BC30F6D21E56CF900B9FAAE /* UtiliOS.mm */,
+				CFD358B6290FFD69000BE79F /* ACODebouncer.h */,
+				CFD358B7290FFD83000BE79F /* ACODebouncer.m */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -2193,6 +2198,7 @@
 				F4960C052051FE8200780566 /* ACRView.mm in Sources */,
 				6B5D240E212C89E70010EB07 /* ACORemoteResourceInformation.mm in Sources */,
 				F401A8801F1045CA006D7AF2 /* ACRContentHoldingUIView.mm in Sources */,
+				CFD358B8290FFD83000BE79F /* ACODebouncer.m in Sources */,
 				F44873121EE2261F00FCAFAE /* Image.cpp in Sources */,
 				F4CAE77B1F7325DF00545555 /* Separator.cpp in Sources */,
 				F448731F1EE2261F00FCAFAE /* ShowCardAction.cpp in Sources */,

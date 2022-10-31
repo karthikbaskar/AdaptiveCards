@@ -17,14 +17,21 @@
             "style": "filtered",
             "isRequired": true,
             "errorMessage": "This is a required input",
+            "isSIngleSelect":
+            "Isselected"
             "placeholder": "Please choose",
             "choices": [
                 {
                     "$data": "${Order.questions[0].items}",
                     "title": "${choice}",
                     "value": "${value}"
+                    fsdf
                 }
-            ]
+            ],
+            "choices.data":
+            {
+                "sfhijf":"sdfdsfj"
+            }
         },
         {
             "type": "Input.ChoiceSet",

@@ -8,9 +8,10 @@
 #import "ACOHostConfig.h"
 #import "ACRIBaseInputHandler.h"
 #import "ACRView.h"
+#import "ACODebouncer.h"
 #import <UIKit/UIKit.h>
 
-@interface ACRChoiceSetCompactStyleView : UITextField <UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, ACRIBaseInputHandler>
+@interface ACRChoiceSetCompactStyleView : UITextField <UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, ACRIBaseInputHandler, ACODebouncerDelegate>
 @property NSString *id;
 @property NSMutableDictionary *results;
 @property (weak) UIView *filteredListView;
@@ -37,6 +38,8 @@
 - (NSString *)getItemAt:(NSInteger)index;
 
 - (void)filter:(NSString *)filter;
+
+- (void)updateFilteredList:(NSArray<NSString *> *)filter;
 
 - (void)resetFilter;
 

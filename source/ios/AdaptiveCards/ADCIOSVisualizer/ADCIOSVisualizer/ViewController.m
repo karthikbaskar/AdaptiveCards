@@ -235,6 +235,28 @@ CGFloat kFileBrowserWidth = 0;
     self.hostconfig = payload;
 }
 
+- (void)onChoiceSetQueryChange:(NSString *)query acoElem:(ACOBaseCardElement *)elem completion:(void (^)(NSArray<NSString *> *choices, NSError *error))completion
+{
+    NSLog(@"heello %@", query);
+    NSMutableArray<NSString *> *choices = [[NSMutableArray alloc] init];
+    if ([query length])
+    {
+        if([query isEqualToString:@"A"])
+        {
+            [choices addObject:@"apple"];
+            [choices addObject:@"apricot"];
+            [choices addObject:@"apple12"];
+        }
+        else if ([query isEqualToString:@"Ap"])
+        {
+            [choices addObject:@"apricot"];
+        }
+        completion(choices, nil);
+        return;
+    }
+    completion(choices, nil);
+}
+
 - (void)didFetchUserResponses:(ACOAdaptiveCard *)card action:(ACOBaseActionElement *)action
 {
     if (action.type == ACROpenUrl) {

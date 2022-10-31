@@ -58,8 +58,8 @@ std::shared_ptr<ChoicesData> ChoicesData::Deserialize(ParseContext& /*context*/,
 {
     auto choicesData = std::make_shared<ChoicesData>();
 
-    auto type = ParseUtil::GetString(json, AdaptiveCardSchemaKey::Type, true);
-    auto dataset = ParseUtil::GetString(json, AdaptiveCardSchemaKey::Dataset, true);
+    auto type = ParseUtil::GetString(json, AdaptiveCardSchemaKey::Type, false);
+    auto dataset = ParseUtil::GetString(json, AdaptiveCardSchemaKey::Dataset, false);
     if (type.compare((AdaptiveCardSchemaKeyToString(AdaptiveCardSchemaKey::DataQuery))) == 0 && !dataset.empty())
     {
         choicesData->SetType(type);

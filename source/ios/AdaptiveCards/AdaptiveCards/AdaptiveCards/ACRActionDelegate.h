@@ -7,6 +7,7 @@
 
 #import "ACOAdaptiveCard.h"
 #import "ACOBaseActionElement.h"
+#import "ACOBaseCardElement.h"
 #import <Foundation/Foundation.h>
 
 @class ACROverflowMenuItem;
@@ -21,6 +22,7 @@
 - (void)didChangeVisibility:(UIButton *)button isVisible:(BOOL)isVisible;
 - (void)didChangeViewLayout:(CGRect)oldFrame newFrame:(CGRect)newFrame;
 - (void)didChangeViewLayout:(CGRect)oldFrame newFrame:(CGRect)newFrame properties:(NSDictionary *)properties;
+- (void)onChoiceSetQueryChange:(NSString *)query acoElem:(ACOBaseCardElement *)elem completion:(void (^)(NSArray<NSString *> *choices, NSError *error))completion;
 
 #pragma mark - callbacks for overflow actions
 

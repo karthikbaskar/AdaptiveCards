@@ -7,20 +7,17 @@ import {
     Container,
     SerializationContext,
     ShowCardAction,
-    ToggleVisibilityAction,
-    TextBlock,
-    renderSeparation
+    ToggleVisibilityAction
 } from "./card-elements";
 import * as Enums from "./enums";
 import {
     NumProperty,
     property,
     PropertyBag,
-    SerializableObjectCollectionProperty,
     SerializableObjectSchema,
     Versions
 } from "./serialization";
-import { GlobalRegistry, ElementSingletonBehavior } from "./registry";
+import { GlobalRegistry } from "./registry";
 import { TypeErrorType, ValidationEvent } from "./enums";
 import { Strings } from "./strings";
 import {
@@ -82,6 +79,7 @@ export class CarouselPage extends Container {
             "Input.Number",
             "Input.ChoiceSet",
             "Input.Toggle",
+            "Carousel",
             ...super.forbiddenChildElements()
         ];
     }
@@ -142,9 +140,32 @@ export class Carousel extends Container {
         }
     }
 
-    static readonly headerProperty = new SerializableObjectCollectionProperty(Versions.v1_6, "header", TextBlock);
-    @property(Carousel.headerProperty)
-    header? : TextBlock[];
+    static readonly initialPageProperty = new NumProperty(Versions.v1_6, "initialPage", 0);
+    @property(Carousel.initialPageProperty)
+    get initialPageIndex(): number {
+        return this.getValue(Carousel.initialPageProperty); 
+    }
+
+    set initialPageIndex(value: number) { 
+        if (this.isValidParsedPageIndex(value)) { 
+            this.setValue(Carousel.initialPageProperty, value);
+        } else { 
+            console.warn(Strings.errors.invalidInitialPageIndex(value));
+            this.setValue(Carousel.initialPageProperty, 0); 
+        }
+    }
+    
+    private isValidParsedPageIndex(index: number) : boolean {
+        return this._pages ? this.isValidPageIndex(index, this._pages.length) : false;
+    }
+
+    private isValidRenderedPageIndex(index: number) : boolean {
+        return this._renderedPages ? this.isValidPageIndex(index, this._renderedPages.length) : false;
+    }
+
+    private isValidPageIndex(index: number, collectionSize: number) {
+        return (collectionSize > 0 && 0 <= index && index < collectionSize);
+    }
 
     //#endregion
 
@@ -159,8 +180,8 @@ export class Carousel extends Container {
     private _pages: CarouselPage[] = [];
     private _renderedPages: CarouselPage[];
     private _carouselPageContainer: HTMLElement;
+    private _containerForAdorners: HTMLElement;
     private _currentIndex: number = 0;
-    private _renderedHeaders: HTMLElement[] = [];
     private _previousEventType: Enums.CarouselInteractionEvent = Enums.CarouselInteractionEvent.Pagination;
 
     // Question: Why do we place this on the Carousel instead of the CarouselPage?
@@ -180,12 +201,15 @@ export class Carousel extends Container {
         ];
     }
 
-    getJsonTypeName(): string {
-        return "Carousel";
+    protected adjustRenderedElementSize(renderedElement: HTMLElement) {
+        super.adjustRenderedElementSize(renderedElement);
+        if (this.height == "stretch" && this._containerForAdorners !== undefined) { 
+            this._containerForAdorners.style.height = "100%";
+        }
     }
 
-    getElementSingletonBehavior(): ElementSingletonBehavior {
-        return ElementSingletonBehavior.Only;
+    getJsonTypeName(): string {
+        return "Carousel";
     }
 
     getItemCount(): number {
@@ -251,7 +275,6 @@ export class Carousel extends Container {
         super.internalParse(source, context);
 
         this._pages = [];
-        this._renderedPages = [];
 
         const jsonPages = source["pages"];
         if (Array.isArray(jsonPages)) {
@@ -261,6 +284,19 @@ export class Carousel extends Container {
                     this._pages.push(page);
                 }
             }
+        }
+
+        // everything is parsed do validate on initial page index
+        this.validateParsing(context);
+    }
+
+    private validateParsing(context: SerializationContext) {
+        if (!this.isValidParsedPageIndex(this.initialPageIndex)) {
+            context.logParseEvent(
+                this,
+                Enums.ValidationEvent.InvalidPropertyValue,
+                Strings.errors.invalidInitialPageIndex(this.initialPageIndex)
+            );
         }
     }
 
@@ -285,24 +321,7 @@ export class Carousel extends Container {
 
         const containerForAdorners: HTMLElement = document.createElement("div");
         containerForAdorners.className = this.hostConfig.makeCssClassName("ac-carousel-container");
-
-        if (this.header) {
-            for (let adaptiveTextBlock of this.header as Array<CardElement>)
-            {
-                adaptiveTextBlock.setParent(this);
-                const renderedHeader = adaptiveTextBlock.render();
-                if (renderedHeader) {
-                    if (this._renderedHeaders.length > 0 && adaptiveTextBlock.separatorElement) {
-                        adaptiveTextBlock.separatorElement.style.flex = "0 0 auto";
-
-                        Utils.appendChild(cardLevelContainer, adaptiveTextBlock.separatorElement);
-                    }
-
-                    Utils.appendChild(cardLevelContainer, renderedHeader);
-                    this._renderedHeaders.push(renderedHeader);
-                }
-            }
-        }
+        this._containerForAdorners = containerForAdorners;
 
         cardLevelContainer.appendChild(containerForAdorners);
 
@@ -346,6 +365,7 @@ export class Carousel extends Container {
             "ac-carousel-left"
         );
         containerForAdorners.appendChild(prevElementDiv);
+        Utils.addCancelSelectActionEventHandler(prevElementDiv);
 
         const nextElementDiv: HTMLElement = document.createElement("div");
         nextElementDiv.className = this.hostConfig.makeCssClassName(
@@ -353,12 +373,14 @@ export class Carousel extends Container {
             "ac-carousel-right"
         );
         containerForAdorners.appendChild(nextElementDiv);
+        Utils.addCancelSelectActionEventHandler(nextElementDiv);
 
         const pagination: HTMLElement = document.createElement("div");
         pagination.className = this.hostConfig.makeCssClassName(
             "swiper-pagination",
             "ac-carousel-pagination"
         );
+        Utils.addCancelSelectActionEventHandler(pagination);
 
         containerForAdorners.appendChild(pagination);
 
@@ -391,21 +413,6 @@ export class Carousel extends Container {
             }
         }
 
-        if (this._renderedHeaders.length > 0 && this._renderedPages.length > 0) {
-            Utils.appendChild(
-                carouselContainer,
-                renderSeparation(
-                    this.hostConfig,
-                    {
-                        spacing: this.hostConfig.getEffectiveSpacing(this.spacing),
-                        lineThickness: this.separator ? this.hostConfig.separator.lineThickness : undefined,
-                        lineColor: this.separator ? this.hostConfig.separator.lineColor : undefined
-                    },
-                    Enums.Orientation.Horizontal
-                )
-            );
-        }
-
         carouselContainer.appendChild(carouselWrapper);
 
         carouselContainer.tabIndex = this.isDesignMode() ? -1 : 0;
@@ -417,7 +424,15 @@ export class Carousel extends Container {
         // `isRtl()` will set the correct value of rtl by reading the value from the parents
         this.rtl = this.isRtl();
         this.applyRTL(carouselContainer);
-        this.applyRTL(cardLevelContainer);
+
+        if (!this.isDesignMode()) {
+            if (this.isValidRenderedPageIndex(this.initialPageIndex)) {
+                this._currentIndex = this.initialPageIndex;
+            } else {
+                console.warn(Strings.errors.invalidInitialPageIndex(this.initialPageIndex));
+                this._currentIndex = 0
+            }
+        }
 
         this.initializeCarouselControl(
             carouselContainer,
@@ -590,6 +605,5 @@ export class CarouselEvent {
 GlobalRegistry.defaultElements.register(
     "Carousel",
     Carousel,
-    Versions.v1_6,
-    ElementSingletonBehavior.Only
+    Versions.v1_6
 );

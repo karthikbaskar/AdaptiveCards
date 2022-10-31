@@ -192,7 +192,7 @@ export abstract class InputWithPopup<TPopupControl extends PopupControl, TValue>
     private updateLabel() {
         if (this._labelElement) {
             if (this._value) {
-                this._labelElement.innerHTML = this.getValueAsString();
+                this._labelElement.innerText = this.getValueAsString();
                 this._labelElement.classList.remove("placeholder");
             }
             else {
@@ -284,11 +284,13 @@ export abstract class InputWithPopup<TPopupControl extends PopupControl, TValue>
         };
 
         this._popupControl.popup(this.rootElement);
+        this.rootElement.setAttribute("aria-expanded", "true");
     }
 
     closePopup(wasCancelled: boolean) {
         if (this.popupControl) {
             this.popupControl.closePopup(wasCancelled);
+            this.rootElement.setAttribute("aria-expanded", "false");
         }
     }
 

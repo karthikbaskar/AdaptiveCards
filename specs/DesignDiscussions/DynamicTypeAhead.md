@@ -21,11 +21,11 @@ This document covers changes to add Dynamic Type Ahead search support to Input.C
 _Scenario 1: Search for a device model_ <br/>
 `FixIt` is an app for raising requests for mobile repairs. `FixIt` sends an adaptive card to the user which the user has to fill in order to provide details of the device which needs repair. Here the device model field can be a dynamic type ahead (Input.ChoiceSet) which fetches the model names from the backend as the user types.
 
-![img](assets/InputLabels/TypeAheadSearch_intro_bot.png)
+![img](assets/TypeAhead/TypeAheadSearch_intro_bot.png)
 
 _Scenario 2: People Picker_ <br/>
 Using the approvals app users can assign a request to people. This scenario can use an adaptive card with an Input.ChoiceSet which allows picking people dynamically. As the user types in the input box, dynamic choices of people are show to the user. From this dynamic choices of people, user can pick an option.
-![img](assets/InputLabels/TypeAheadSearch_intro_people.png)
+![img](assets/TypeAhead/TypeAheadSearch_intro_people.png)
 
 ## Requirements
 
@@ -80,7 +80,7 @@ TODO: Update #8 and #9 as per priority.
 
 ### Current Input.ChoiceSet rendering
 
-![img](assets/InputLabels/Input.ChoiceSet_rendering_1.png)
+![img](assets/TypeAhead/Input.ChoiceSet_rendering_1.png)
 
 The below represents the current rendering of Input.ChoiceSet:
 
@@ -102,7 +102,7 @@ Recommendation: Option 1 - Since style is a cosmetic property where as choices.d
 
 TODO: Add what teams is doing in custom rendering
 
-![img](assets/InputLabels/Input.ChoiceSet_rendering_2.png)
+![img](assets/TypeAhead/Input.ChoiceSet_rendering_2.png)
 
 1.  If choices.data is present and valid then render drop down menu with dynamic choices
 2.  Else check if isMultiSelect is true then render check boxes
@@ -118,7 +118,7 @@ Since we still support defining static values as choices, we can just provide th
 
 ### Communication with Host to fetch Dynamic choices
 
-![img](assets/InputLabels/TypeAheadSearch.png)
+![img](assets/TypeAhead/TypeAheadSearch.png)
 
 1.  On any text change in the type ahead control text box we will fetch the dynamic choices from the host.
 2.  We will make an asynchronous call on a background thread to the host in order to fetch the dynamic choices.
@@ -174,7 +174,7 @@ Input.ChoiceSet
 }
 ```
 
-![img](assets/InputLabels/typeaheadshared.png)
+![img](assets/TypeAhead/typeaheadshared.png)
 
 Choices.data class in shared object model parses and serializes the choices.data property. Also, we will validate type as data.query which is defined in choices.data. We will have to identify what to do when there is an error in parsing. for eg: if any of the required properties are missing, we can either skip the deserialization/serialization for choices.data or return json parsing error to the host and host can show error view to the user. (This is the case where adaptive card rendering failed).
 
@@ -192,7 +192,7 @@ Existing experience - If we fail to specify correct title and value props with c
 
 #### Render Dynamic Type Ahead
 
-![img](assets/InputLabels/TypeAheadSearch_render_android.png)
+![img](assets/TypeAhead/TypeAheadSearch_render_android.png)
 
 1.  Host calls the render method in the AdaptiveCardRenderer to render the adaptive card. Additional parameter choicesResolver is passed from the host to the SDK. This is an implementation of the IChoicesResolver exposed by the SDK, which is used by the SDK to fetch dynamic choices from host.
 2.  AdaptiveCardRender creates a instance of RenderedAdaptiveCard.
@@ -212,7 +212,7 @@ New Interfaces and classes <br/>
 
 #### Communication with Host to fetch Dynamic choices
 
-![img](assets/InputLabels/TypeAheadSearch_communication_android.png)
+![img](assets/TypeAhead/TypeAheadSearch_communication_android.png)
 
 1.  When user types in the type ahead control box, an event is triggered onto the auto complete view.
 2.  AutoCompleteView calls in the filter method in the filtered adaptor.

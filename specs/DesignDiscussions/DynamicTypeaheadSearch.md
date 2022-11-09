@@ -2,8 +2,8 @@
 
 # Dynamic Typeahead search
 
-### Communication from host to sdk and sdk to host
-We will have to send the query to the host whenever query is changing in the input control so that host can make an invoke to the bot and once the choices is returned by the host we will update the choices in the UI.
+### Communication with the host
+We will have to send the query to the host whenever search text is changing in the choiceset input control so that host can fetch dynamic choices and once the choices is returned by the host, we will update the choices in the UI.
 
 Option 1: We can make use of notifications for async communication in iOS.
 
@@ -15,6 +15,10 @@ We need to have two way communication with the host (host to sdk and sdk to host
 
 Recommended Approach:
 
+Sequence Diagram : Async communication 
+
+![img](assets/asyncommunicationtypeahead.png)
+Also, this sequence diagram shows the flow for inline choiceset experience.
 1. SDK will define the protocol **ACRInputDelegate** to communicate with the host. Host will need to implement the same protocol ACRInputDelegate as provided by the SDK. ACRMediaDelegate and ACRActionDelegate also uses the protocol method for one way communication.
 2. Host will call the method into the render method of the AdaptiveCardRenderer and pass the cardActionHandler instance.
 3. AdaptiveCardRenderer creates an instance of cardActionHandler and input handler. Also, views of all the components are added to this instance.
@@ -22,11 +26,6 @@ Recommended Approach:
 5. On any input change in choiceset control, SDK will notify the host with the help of delegate method asynchronously and will also paas the  query string and base action element that has choiceset properties.
 6. Now host will make invoke call to the bot/service to fetch response for the sent query. Once host received a response with dynamic choices then host will simply return those choices to the SDK.
 7. SDK will update the UI controls once response is received and will also update host to change any layout related constraint.
-Also, this sequence diagram shows the flow for inline choiceset experience.
-
-Sequence Diagram : Async communication 
-
-![img](assets/asyncommunicationtypeahead.png)
 
 onChoiceSetQueryChange method paramters in ACRInputDelegate protocol
 | Parameter | Type | Description |
@@ -66,10 +65,10 @@ While the host resolves the request for dynamic choices requested by the sdk, we
 2. We will use a maximum time limit to fetch dynamic choices in the host config. We show an error message if the choices are not fetched in this time limit.
 3. We will have a way to customize error message based on the host's response. Host can return localized error message to the SDK when invoke call completes. SDK will show error message on the UX.
 
-### UX: How host can configure the styles of UI
+### How host can configure the styles of UI
 
 **Inline experience:**
-We can expose few properties in the compact style view and that can be easily accessed in choiceset custom renderer. 
+We will expose properties in the compact style view and that can be easily accessed in choiceset custom renderer. 
 
 @interface ACRChoiceSetCompactStyleView
 @property NSString *id;
@@ -94,9 +93,9 @@ We will give host the ability to configure the UX based on their requirements. H
 - update the layout of the list view (eg. if host may want to add separator in the choices list and for that we are using UITableView)
 - can update the layout of the choicesetview (eg. border/spacingtop/spacing down)
 - can register class for list layout cell
-- can configure loading indicator to the table view and sdk will send request to show/hide the view (TODO: needs more investigation)
+- can configure loading indicator to the table view and sdk will send request to host show/hide the view.
 
-### Full screen view for static and dynamic typeahead control
+### User Experience : Full screen view for static and dynamic typeahead control
 TODO
 
 

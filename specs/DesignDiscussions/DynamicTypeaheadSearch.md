@@ -29,7 +29,7 @@ Also, this sequence diagram shows the flow for inline choiceset experience.
 
 Sequence Diagram : Async communication 
 
-![img](assets/asyncommunicationtypeahead.PNG)
+![img](assets/asyncommunicationtypeahead.png)
 
 onChoiceSetQueryChange method paramters in ACRInputDelegate protocol
 | Parameter | Type | Description |

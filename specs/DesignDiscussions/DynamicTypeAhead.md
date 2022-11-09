@@ -235,7 +235,7 @@ TODO: Add user experience for android
 
 ### iOS
 
-(https://github.com/karthikbaskar/AdaptiveCards/blob/usr/jykukrej/typeahead-search/specs/DesignDiscussions/DynamicTypeaheadSearch.md)
+[iOS design link](https://github.com/karthikbaskar/AdaptiveCards/blob/usr/jykukrej/typeahead-search/specs/DesignDiscussions/DynamicTypeaheadSearch.md)
 
 ## Web
 

@@ -176,7 +176,7 @@ Input.ChoiceSet
 
 ![img](assets/TypeAhead/typeaheadshared.png)
 
-Choices.data class in shared object model parses and serializes the choices.data property. Also, we will validate type as data.query which is defined in choices.data. We will have to identify what to do when there is an error in parsing. for eg: if any of the required properties are missing, we can either skip the deserialization/serialization for choices.data or return json parsing error to the host and host can show error view to the user. (This is the case where adaptive card rendering failed).
+Choices.data class in shared object model parses and serializes the choices.data property. Also, we will validate type as data.query which is defined in choices.data. Choices.data property itself is optional. We will have to identify what to do when there is an error in parsing. for eg: if any of the required properties are missing, we can either skip the deserialization/serialization for choices.data or return json parsing error to the host and host can show error view to the user. (This is the case where adaptive card rendering failed). The following schema changes define that a ChoiceSet needs to dynamically fetch data from the service.
 
 1.  We can simply drop choices.data and will fallback to the existing experience of Input.ChoiceSet. We will make changes to the parsing logic for choices.data and the changes will allow cards to render even if the required properties are missed. Pros: This will not break rendering experience for the user.
 2.  Adaptive card rendering fails if required properties are not defined correctly. This behavior is due to the fact that the card has required properties are missing. Pros: Invalid json error returned to the host so developers can identify that there is some parsing related issue with the json.
@@ -235,10 +235,7 @@ TODO: Add user experience for android
 
 ### iOS
 
- <details>
- <summary>Dev Spec</summary>
- TODO: Add dev spec for iOS SDK
- </details>
+(https://github.com/karthikbaskar/AdaptiveCards/blob/usr/jykukrej/typeahead-search/specs/DesignDiscussions/DynamicTypeaheadSearch.md)
 
 ## Web
 

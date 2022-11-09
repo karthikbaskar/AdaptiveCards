@@ -2,21 +2,18 @@
 
 # Dynamic Typeahead search
 
-###Communication from host to sdk and sdk to host
-Option 1:
-we can make use of notifications for async communication in iOS.
-Option 2:
-We will do communication asynchronously using gcd and compleion block.
+### Communication from host to sdk and sdk to host
+We will have to send the query to the host whenever query is changing in the input control so that host can make an invoke to the bot and once the choices is returned by the host we will update the choices in the UI.
 
-### Communication with Host to fetch Dynamic choices
+Option 1: We can make use of notifications for async communication in iOS.
 
-For this feature, we need two way communication with the host (host to sdk and sdk to host).
-Why do we need this?
- We will have to send the query to the host whenever query is changing in the input control so that host can make an invoke to the bot and once the choices is returned by the host we will update the choices in the UI.
- 1. SDK to host: Sdk will notify the host about the query change in choiceset input control and then host can do the network/service call and return response to the sdk.
+Option 2:We will do communication asynchronously using gcd and compleion block.
+
+We need to have two way communication with the host (host to sdk and sdk to host). 
+1. SDK to host: Sdk will notify the host about the query change in choiceset input control and then host can do the network/service call and return response to the sdk.
  2. Async Host to SDK : Now once host receives the choices from the bot and then will need to update the UX based on the dynamic choices received from the host. We will have completion block on the SDK side to handle this scenario.
 
-### Recommended Approach
+Recommended Approach:
 
 1. SDK will define the protocol **ACRInputDelegate** to communicate with the host. Host will need to implement the same protocol ACRInputDelegate as provided by the SDK. ACRMediaDelegate and ACRActionDelegate also uses the protocol method for one way communication.
 2. Host will call the method into the render method of the AdaptiveCardRenderer and pass the cardActionHandler instance.
@@ -47,7 +44,7 @@ updateChoices method parameters in
 ![img](assets/dynamictypeahead_1.png)
 
 
-#### Debounce Logic
+### Debounce Logic
 
 Debouncer is a helper which implements the debounce operation on a stream of data. e.g. When user is typing in a UITextField, each edit operation is pushed into the debouncer, and the debouncer will
 only perform the callback when a certain minimum time say 3ms has been elapsed since last keystroke by the user.
@@ -56,21 +53,22 @@ only perform the callback when a certain minimum time say 3ms has been elapsed s
 - (void)postInput:(id)input - post input method will put the request in queue till the delay has been elapsed. 
 - (void)sendOutput:(id)output - once the minimum time is elapsed debouncer will send the request to UITextField and hence sdk will make a call to the host with query text.
 
-#### Loading experience
+### Loading experience
 
 While the host resolves the request for dynamic choices requested by the sdk, we continue to show the static choices.
 
 1. We can add a loader to indicate that dynamic choices are being fetched.
 2. We fetch the dynamic choices silently and append the result once its available.
 
-#### Failure scenarios 
+### Failure scenarios 
 
 1. We have to show error message to the user when bot return with the error
 2. We will use a maximum time limit to fetch dynamic choices in the host config. We show an error message if the choices are not fetched in this time limit.
 3. We will have a way to customize error message based on the host's response. Host can return localized error message to the SDK when invoke call completes. SDK will show error message on the UX.
 
-#### How host can configure the styles of UI
-#####Inline experience:
+### UX: How host can configure the styles of UI
+
+**Inline experience:**
 We can expose few properties in the compact style view and that can be easily accessed in choiceset custom renderer. 
 
 @interface ACRChoiceSetCompactStyleView
@@ -98,7 +96,7 @@ We will give host the ability to configure the UX based on their requirements. H
 - can register class for list layout cell
 - can configure loading indicator to the table view and sdk will send request to show/hide the view (TODO: needs more investigation)
 
-#### Full screen view for static and dynamic typeahead control
+### Full screen view for static and dynamic typeahead control
 TODO
 
 

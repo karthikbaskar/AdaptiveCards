@@ -11,7 +11,7 @@
 #import "ACODebouncer.h"
 #import <UIKit/UIKit.h>
 
-@interface ACRChoiceSetCompactStyleView : UITextField <UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, ACRIBaseInputHandler, ACODebouncerDelegate>
+@interface ACRChoiceSetCompactStyleView : UITextField <UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, ACRIBaseInputHandler>
 @property NSString *id;
 @property NSMutableDictionary *results;
 @property (weak) UIView *filteredListView;
@@ -20,6 +20,8 @@
 @property CGFloat spacingTop;
 /// bottom margin of filtered list view
 @property CGFloat spacingBottom;
+
+- (void)updateSelectedChoiceInTextField:(NSString *)choice;
 
 - (instancetype)initWithInputChoiceSet:(ACOBaseCardElement *)acoElem
                               rootView:(ACRView *)rootView
@@ -37,9 +39,11 @@
 
 - (NSString *)getItemAt:(NSInteger)index;
 
-- (void)filter:(NSString *)filter;
+-(instancetype)initWithUnfilteredList:(NSArray<NSString *> *) choices;
 
-- (void)updateFilteredList:(NSArray<NSString *> *)filter;
+- (void)updatefilteredListForStaticTypeahead:(NSString *) choices;
+
+- (void)updatefilteredListForDynamicTypeahead:(NSArray<NSString *> *) choices;
 
 - (void)resetFilter;
 

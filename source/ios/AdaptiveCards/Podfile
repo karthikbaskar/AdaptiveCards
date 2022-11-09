@@ -14,7 +14,7 @@ target 'ADCIOSVisualizer' do
 end
 
 workspace 'AdaptiveCards'
-platform :ios, '13'
+platform :ios, '14'
 
 post_install do |installer|
   installer.pods_project.build_configurations.each do |config|

@@ -240,7 +240,7 @@ New Interfaces and classes <br/>
 
 ### iOS
 
-[iOS design link](https://github.com/karthikbaskar/AdaptiveCards/blob/usr/jykukrej/typeahead-search/specs/DesignDiscussions/DynamicTypeaheadSearch.md)
+[iOS design link](https://github.com/karthikbaskar/AdaptiveCards/blob/usr/jykukrej/typeahead-search/specs/DesignDiscussions/DynamicTypeaheadSearch_iOSDesign.md)
 
 ## Open Questions
 

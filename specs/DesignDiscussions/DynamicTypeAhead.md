@@ -197,7 +197,7 @@ Rendering
 
 ### Android
 
-[Android design link](/DesignDiscussions/DynamicTypeAhead-Android.md)
+[Android design link](https://github.com/karthikbaskar/AdaptiveCards/blob/dipja/dynamic-type-ahead-doc/specs/DesignDiscussions/DynamicTypeAhead-Android.md)
 
 ### iOS
 

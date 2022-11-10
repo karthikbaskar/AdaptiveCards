@@ -77,9 +77,7 @@ How host can configure the styles of UI?
 
 **Full screen view for static and dynamic typeahead control**
 
-![img](assets/interfacedynamictypeahead.png)
-
-<img src="assets/fullscreenfilteredstyle.png" height="300">
+<img src="assets/interfacedynamictypeahead.png" height="400"> <img src="assets/fullscreenfilteredstyle.png" height="300">
 
 
 

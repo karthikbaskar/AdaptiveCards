@@ -39,9 +39,9 @@ P0: Hosts can specify 1 or more pre-determined datasets that get the first-chanc
 
 P0: A static list of choices can be provided, and any dynamic ones will get appended to the end.
 
-P1: The input will support "isMultiSelect": true.
+P1: The input will support "isMultiSelect": true. Multiselect won’t be supported as a part of v1.0 release. (Multi select will be a fast follow up). 
 
-P1: Add support pagination of dynamic choices.
+P1: Add support pagination of dynamic choices. Pagination won’t be supported as a part of v1.0 release. We will display only top 15 as in Teams today.
 
 ## Schema
 
@@ -61,8 +61,7 @@ Data.Query Definition
 | count | number | No | Populated for the invoke request to the bot to specify how many elements should be returned (can be ignored by the bot, if they want to send a diff amount)  
  | skip | number | No | Populated for the invoke request to the bot to indicate that we want to paginate and skip ahead in the list
 
-Recommendation: Introduce count and skip only when we add support for pagination.
-TODO: Remove skip and count if we do not go for pagination in Phase 1.
+Recommendation: Introduce count and skip only when we add support for pagination. Pagination won’t be supported as a part of v1.0 release. We will display only top 15 as in Teams today.
 
 ## High Level Changes
 
@@ -73,10 +72,8 @@ TODO: Remove skip and count if we do not go for pagination in Phase 1.
 5.  Debouncing logic - Implement a default debouncing logic in the SDK. Allowing host to override this debouncing delay time using host config.
 6.  Error experience - Indication to the user in case an error occurred while fetching dynamic choices.
 7.  No result experience - Indication to the user in case the dynamic choices are empty.
-8.  Support multi select in dynamic type ahead.
-9.  Support pagination of dynamic choices using skip and count.
-
-TODO: Update #8 and #9 as per priority.
+8.  Support multi select in dynamic type ahead. This will not be supported in v1.0 release so out of scope for now.
+9.  Support pagination of dynamic choices using skip and count. This will not be supported in v1.0 release so out of scope for now.
 
 ### Current Input.ChoiceSet rendering
 
@@ -99,8 +96,6 @@ Option 2: Precedence of style > choices.data
 Other option is to give Precedence to style over choices.data. In this case even when developer adds a valid choices.data to the Adaptive card payload and forgets adding ChoiceSetStyle as Filtered, we will render a compact choice set input with static choices by default.
 
 Recommendation: Option 1 - Since style is a cosmetic property where as choices.data is functional property (in case dynamic type ahead), we can consider style as ChoiceInputStyle.Filtered by default when choices.data has a valid value. Hence, it is suggested to go with Option 1 and give precedence to choices.data over style.
-
-TODO: Add what teams is doing in custom rendering
 
 ![img](assets/TypeAhead/Input.ChoiceSet_rendering_2.png)
 
@@ -146,11 +141,8 @@ While the host resolves the request for dynamic choices requested by the sdk we 
 In case the host is not able to resolve (bot error, network error etc.) the search query from the SDK. Host can respond back with an error message. In this case we will show an error message to indicate failure to fetch dynamic choices.
 Also, we show an error message if the choices are not fetched in fixed time limit (upper limit). This limit can have a default value `x` seconds and also be added to host config.
 
-## Mobile
-
-TODO: Add details for common changes for mobile platforms
-
-### Shared Module
+### Shared Model Details
+(shared changes for android/iOS/UWP SDK)
 
  <details>
  <summary>Details</summary>
@@ -174,14 +166,31 @@ Input.ChoiceSet
 }
 ```
 
-![img](assets/TypeAhead/typeaheadshared.png)
+Choices.data class in shared object model parses and serializes the choices.data property. Also, we will validate type as data.query and dataset should be non empty which is defined in choices.data. Choices.data property is a functional and optional property. If any of the required properties are missing, we can either skip the deserialization for choices.data and render the card or return json parsing error to the host and host can handle the error. This is the case where adaptive card rendering fails. 
+If the choices.data payload contains the invalid values, the parsed card will have warnings according to our decision made for closing parsing gap.
 
-Choices.data class in shared object model parses and serializes the choices.data property. Also, we will validate type as data.query which is defined in choices.data. Choices.data property itself is optional. We will have to identify what to do when there is an error in parsing. for eg: if any of the required properties are missing, we can either skip the deserialization/serialization for choices.data or return json parsing error to the host and host can show error view to the user. (This is the case where adaptive card rendering failed). The following schema changes define that a ChoiceSet needs to dynamically fetch data from the service.
+Parsing
 
-1.  We can simply drop choices.data and will fallback to the existing experience of Input.ChoiceSet. We will make changes to the parsing logic for choices.data and the changes will allow cards to render even if the required properties are missed. Pros: This will not break rendering experience for the user.
-2.  Adaptive card rendering fails if required properties are not defined correctly. This behavior is due to the fact that the card has required properties are missing. Pros: Invalid json error returned to the host so developers can identify that there is some parsing related issue with the json.
+- We will make changes to the parsing logic for choices.data and the changes will allow cards to render even if required properties are missing. 
+- We will raise parse warnings to host app for bad or incorrect values for given choices.data properties and continue parsing. It depends upon the host to render the card or not.
+- We do assign default values to optional properties in the adaptive card. Same applies to choices.data property also. (For eg. skip and count are optional in choices.data) We will be setting default values in this scenario.
 
-Existing experience - If we fail to specify correct title and value props with choices prop then, adaptive card rendering fails.
+Rendering
+
+- If dataset or type property in choices.data is not given, is null, is empty, or has invalid value we will raise parsing error as we can not render dynamic typeahead.
+- We will not break the adaptive card rendering incase of invalid choices.data property. We will fallback to the existing choiceset experience. This will not break rendering experience for the user and support backward compatibility for input.choiceset.  
+- We will simply drop choices.data and parse other properties (as this is an optional property). Adaptive card will render card fine across clients.
+Source of truth:[Inconsistencies.md](https://github.com/microsoft/AdaptiveCards/blob/main/specs/DesignDiscussions/Inconsistencies.md#gap-in-the-design)
+
+![img](assets/TypeAhead/sharedmodeltypeahead1.png)
+
+- Host calls the fromJson in the ACOAdaptiveCard to parse the adaptive card json. Only adaptive card payload is passed from the host to the SDK.
+- ACOAdaptiveCard will then call shared adaptive card library to parse the payload. This will parse all the elements in the card payload.
+- If choiceset input is present, will deserialize the input.choiceset and choices.data property with the help of shared lib. Sdk will return card parse results back to the host along with all the parse errors if any.
+- Now it depends upon the host to render the card or not based on the parsing error. Render method of ACOAdaptiveCard will be called if host proceeds with rendering the card.
+- SDk will then ACRCustomChoiceSetRenderer for rendering input.choiceset. This will create dynamic typeahead search view based on the input.choiceset params and return acr view back to the host.
+
+![img](assets/TypeAhead/sharedmodeltypeahead2.png)
 
  </details>
 
@@ -227,26 +236,11 @@ New Interfaces and classes <br/>
 
 [Recommendation - 250 ms](https://medium.com/android-news/implementing-search-on-type-in-android-with-coroutines-ab117c8f13a4)
 
-#### User Experience
-
-TODO: Add user experience for android
-
  </details>
 
 ### iOS
 
 [iOS design link](https://github.com/karthikbaskar/AdaptiveCards/blob/usr/jykukrej/typeahead-search/specs/DesignDiscussions/DynamicTypeaheadSearch.md)
-
-## Web
-
-TODO: Add details for changes for web
-
-### JS
-
- <details>
- <summary>Dev Spec</summary>
- TODO: Add dev spec for JS SDK
- </details>
 
 ## Open Questions
 

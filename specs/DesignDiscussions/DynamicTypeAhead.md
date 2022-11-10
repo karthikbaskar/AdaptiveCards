@@ -39,7 +39,7 @@ P0: Hosts can specify 1 or more pre-determined datasets that get the first-chanc
 
 P0: A static list of choices can be provided, and any dynamic ones will get appended to the end.
 
-P1: The input will support "isMultiSelect": true. Multiselect won’t be supported as a part of v1.0 release. (Multi select will be a fast follow up). 
+P1: The input will support "isMultiSelect": true. Multiselect won’t be supported as a part of v1.0 release. (Multi select will be a fast follow up).
 
 P1: Add support pagination of dynamic choices. Pagination won’t be supported as a part of v1.0 release. We will display only top 15 as in Teams today.
 
@@ -61,7 +61,7 @@ Data.Query Definition
 | count | number | No | Populated for the invoke request to the bot to specify how many elements should be returned (can be ignored by the bot, if they want to send a diff amount)  
  | skip | number | No | Populated for the invoke request to the bot to indicate that we want to paginate and skip ahead in the list
 
-Recommendation: Introduce count and skip only when we add support for pagination. Pagination won’t be supported as a part of v1.0 release. We will display only top 15 as in Teams today.
+Recommendation: Introduce count and skip only when we add support for pagination. Pagination won’t be supported as a part of initial release. We will display only top 15 as in MS Teams today.
 
 ## High Level Changes
 
@@ -72,8 +72,8 @@ Recommendation: Introduce count and skip only when we add support for pagination
 5.  Debouncing logic - Implement a default debouncing logic in the SDK. Allowing host to override this debouncing delay time using host config.
 6.  Error experience - Indication to the user in case an error occurred while fetching dynamic choices.
 7.  No result experience - Indication to the user in case the dynamic choices are empty.
-8.  Support multi select in dynamic type ahead. This will not be supported in v1.0 release so out of scope for now.
-9.  Support pagination of dynamic choices using skip and count. This will not be supported in v1.0 release so out of scope for now.
+8.  Support multi select in dynamic type ahead. This will not be supported in initial release so out of scope for now.
+9.  Support pagination of dynamic choices using skip and count. This will not be supported in initial release so out of scope for now.
 
 ### Current Input.ChoiceSet rendering
 
@@ -128,7 +128,7 @@ Since we still support defining static values as choices, we can just provide th
 
 ### User Experience
 
-We will enable the host to provide it's own UI components and the functionality will be on the SDK side. Host will not need to handle any events which happen on the
+We will enable the host to provide it's own UI components and the functionality will be on the SDK side. Host will not need to handle any events which happen on the dynamic ChoiceSet control.
 
 #### _Loading experience_
 
@@ -142,10 +142,11 @@ In case the host is not able to resolve (bot error, network error etc.) the sear
 Also, we show an error message if the choices are not fetched in fixed time limit (upper limit). This limit can have a default value `x` seconds and also be added to host config.
 
 ### Shared Model Details
-(shared changes for android/iOS/UWP SDK)
+
+Shared changes for android/iOS/UWP SDK
 
  <details>
- <summary>Details</summary>
+ <summary>Click Here To Open Details</summary>
 
 [Schema](#schema) </br>
 **Example card**
@@ -166,21 +167,21 @@ Input.ChoiceSet
 }
 ```
 
-Choices.data class in shared object model parses and serializes the choices.data property. Also, we will validate type as data.query and dataset should be non empty which is defined in choices.data. Choices.data property is a functional and optional property. If any of the required properties are missing, we can either skip the deserialization for choices.data and render the card or return json parsing error to the host and host can handle the error. This is the case where adaptive card rendering fails. 
+Choices.data class in shared object model parses and serializes the choices.data property. Also, we will validate type as data.query and dataset should be non empty which is defined in choices.data. Choices.data property is a functional and optional property. If any of the required properties are missing, we can either skip the deserialization for choices.data and render the card or return json parsing error to the host and host can handle the error. This is the case where adaptive card rendering fails.
 If the choices.data payload contains the invalid values, the parsed card will have warnings according to our decision made for closing parsing gap.
 
 Parsing
 
-- We will make changes to the parsing logic for choices.data and the changes will allow cards to render even if required properties are missing. 
+- We will make changes to the parsing logic for choices.data and the changes will allow cards to render even if required properties are missing.
 - We will raise parse warnings to host app for bad or incorrect values for given choices.data properties and continue parsing. It depends upon the host to render the card or not.
 - We do assign default values to optional properties in the adaptive card. Same applies to choices.data property also. (For eg. skip and count are optional in choices.data) We will be setting default values in this scenario.
 
 Rendering
 
 - If dataset or type property in choices.data is not given, is null, is empty, or has invalid value we will raise parsing error as we can not render dynamic typeahead.
-- We will not break the adaptive card rendering incase of invalid choices.data property. We will fallback to the existing choiceset experience. This will not break rendering experience for the user and support backward compatibility for input.choiceset.  
+- We will not break the adaptive card rendering incase of invalid choices.data property. We will fallback to the existing choiceset experience. This will not break rendering experience for the user and support backward compatibility for input.choiceset.
 - We will simply drop choices.data and parse other properties (as this is an optional property). Adaptive card will render card fine across clients.
-Source of truth:[Inconsistencies.md](https://github.com/microsoft/AdaptiveCards/blob/main/specs/DesignDiscussions/Inconsistencies.md#gap-in-the-design)
+  Source of truth:[Inconsistencies.md](https://github.com/microsoft/AdaptiveCards/blob/main/specs/DesignDiscussions/Inconsistencies.md#gap-in-the-design)
 
 ![img](assets/TypeAhead/sharedmodeltypeahead1.png)
 
@@ -196,63 +197,28 @@ Source of truth:[Inconsistencies.md](https://github.com/microsoft/AdaptiveCards/
 
 ### Android
 
- <details>
- <summary>Dev Spec</summary>
-
-#### Render Dynamic Type Ahead
-
-![img](assets/TypeAhead/TypeAheadSearch_render_android.png)
-
-1.  Host calls the render method in the AdaptiveCardRenderer to render the adaptive card. Additional parameter choicesResolver is passed from the host to the SDK. This is an implementation of the IChoicesResolver exposed by the SDK, which is used by the SDK to fetch dynamic choices from host.
-2.  AdaptiveCardRender creates a instance of RenderedAdaptiveCard.
-3.  Views are created for all components in the adaptive card and added to RenderedAdaptiveCard. ChoiceSetRender is used to create view for input choice sets.
-4.  Based on parameters of ChoiceSetInput, if dynamic type ahead needs to be rendered then AutoCompleteView is created.
-5.  FilteredAdaptor is created and passed ChoiceSetInput instance which contains choices.data, choices[] etc. Also, choicesResolver is passed to the FilteredAdaptor.
-6.  This instance of filteredAdaptor is then set onto the AutoCompleteView.
-
-New Interfaces and classes <br/>
-
-1.  IChoicesResolver
-    method - getDynamicChoices()
-    params - queryText and choice set input which contains choices.data
-    returns - list of dynamic choices
-2.  ChannelAdaptor
-    Sends an asynchronous request to the host on a background thread. Posts the result on to the caller on UIThread.
-
-#### Communication with Host to fetch Dynamic choices
-
-![img](assets/TypeAhead/TypeAheadSearch_communication_android.png)
-
-1.  When user types in the type ahead control box, an event is triggered onto the auto complete view.
-2.  AutoCompleteView calls in the filter method in the filtered adaptor.
-3.  Filtered adaptor creates a request to fetch the dynamic choices from the host and calls the channel adaptor with this request and send choicesResolver as a parameter.
-4.  Channel adaptor forwards the request to fetch the dynamic choices to the host on a background thread.
-5.  The host either resolves the dynamic choices itself of through a backend/bot.
-6.  Host gets a response from the backend/bot which contains list of dynamic choices.
-7.  The host returns the list of dynamic choices to the channel adaptor.
-8.  Channel adaptor inturn posts the filtered adaptor on the caller on a UIThread.
-
-#### Debounce Logic
-
-[Recommendation - 250 ms](https://medium.com/android-news/implementing-search-on-type-in-android-with-coroutines-ab117c8f13a4)
-
- </details>
+[Android design link](/DesignDiscussions/DynamicTypeAhead-Android.md)
 
 ### iOS
 
 [iOS design link](https://github.com/karthikbaskar/AdaptiveCards/blob/usr/jykukrej/typeahead-search/specs/DesignDiscussions/DynamicTypeaheadSearch_iOSDesign.md)
+
+### JS
 
 ## Open Questions
 
 1.  Rendering flow for choice set - PM input. Fallback and backward compatibility.
     Refer to [Proposed Input.ChoiceSet rendering](#proposed-inputchoiceset-rendering).
     Does developer assign ChoiceSetStyle as `Filtered` when using TypeAheadSearch? If not, how do we manage fallback to show static choices using existing `Filtered` ChoiceSetStyle control?
+    We will give preference to choices.data over style.
 2.  Do we support multi select with type ahead?
     Current `Filtered` choice set style support single select for static choices. New UX and spec will be required for multi select for all platforms.
+    We will support only single select in initial release.
 3.  Loading UI when search invoke is in progress to fetch dynamic choices.
     No results UI in case of empty dynamic choices list.
     Error UI case - How to handle bot invoke error and show it on the AC UI?
 4.  UX for pagination of results. (Automatic or user initiated) - Skip & count
+    Pagination is out of scope for now.
 5.  SDK will leave the search request processing to the host? Is there a need for the host to register any pre-determined databases?
     SDK will not be responsible for resolving any search query. Host might resolve the query locally or through backend (bot).
 6.  Invoke name - application/search.
